@@ -1,2 +1,3 @@
-# ignora o ambiente virtual
-.\venv
+# ignora o ambiente virtual e as configs do VScode
+.\venv 
+.\vscode
