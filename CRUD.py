@@ -1,9 +1,13 @@
 import pandas as pd
+import os
+def limpa_tela():
+    os.system('cls' if os.name == 'nt' else 'clear')
 def listamento():
-    print('\n')
+    limpa_tela()
     print(df)
     input('Aperte para sair...') # serve como um "aguarde"
 def cadastramento(): 
+    limpa_tela()
     nome = nascimento = ''
     cpf = altura = peso = 0
     nome = input('Nome: ')
@@ -15,11 +19,13 @@ def cadastramento():
     df.to_json('Bd.json', force_ascii=False, orient='records') # salvo logo em seguida
     input('Aperte para sair...')
 def consulta():
+    limpa_tela()
     nome = input('Digite o nome exato a ser pesquisado: ')
     if nome in df['nome'].values:
         print(df[df['nome'] == nome]) # mostra o valor na linha do índice do nome digitado
     input('Aperte para sair...')
 def edita():
+    limpa_tela()
     nome = nascimento = ''
     cpf = altura = peso = 0
     indice = 0
@@ -40,6 +46,7 @@ def edita():
     df.to_json('Bd.json', force_ascii=False, orient='records') # salvo logo em seguida
     input('Aperte para sair...')
 def exclui():
+    limpa_tela()
     nome = input('Digite o nome que deseja excluir: ')
     if nome in df['nome'].values:
         print(df[df['nome'] == nome]) # mostra o valor na linha do índice do nome digitado
@@ -48,8 +55,14 @@ def exclui():
         if aux in 's':
             return df.drop(indice)
     input('Aperte para sair...')
+def converte_excel():
+    limpa_tela()
+    df.to_excel('Bd.xlsx', engine='openpyxl') # salva em xlsx
+    print('Arquivo gerado com sucesso...')
+    input()
 df = pd.read_json('Bd.json') # abre o arquivo
 while True:
+    limpa_tela() # limpa a tela
     print('--------------------------')
     print(f'Pessoas cadastradas: {len(df)}')
     print('--------------------------')
@@ -74,6 +87,6 @@ while True:
         df = exclui() # exclui a pessoa escolhida
         df.to_json('Bd.json', force_ascii=False, orient='records') # salvo logo em seguida
     elif escolha == 6:
-        df.to_excel('Bd.xlsx', engine='openpyxl')
+        converte_excel() # salva o Df em um arquivo xlsx
     elif escolha == 0:
         break
