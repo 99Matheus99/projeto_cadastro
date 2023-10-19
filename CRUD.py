@@ -39,7 +39,15 @@ def edita():
     df.iloc[[indice], [4]] = peso
     df.to_json('Bd.json', force_ascii=False, orient='records') # salvo logo em seguida
     input('Aperte para sair...')
-
+def exclui():
+    nome = input('Digite o nome que deseja excluir: ')
+    if nome in df['nome'].values:
+        print(df[df['nome'] == nome]) # mostra o valor na linha do índice do nome digitado
+        indice = df.index[df['nome'] == nome].tolist() # guardo o índice da linha
+        aux = input('Tem certeza da escolha? ').strip()
+        if aux in 's':
+            return df.drop(indice)
+    input('Aperte para sair...')
 df = pd.read_json('Bd.json') # abre o arquivo
 while True:
     print('--------------------------')
@@ -62,5 +70,10 @@ while True:
         consulta() # consulta a pessoa no banco de dados
     elif escolha == 4:
         edita() # edita a pessoa escolhida
+    elif escolha == 5:
+        df = exclui() # exclui a pessoa escolhida
+        df.to_json('Bd.json', force_ascii=False, orient='records') # salvo logo em seguida
+    elif escolha == 6:
+        df.to_excel('Bd.xlsx', engine='openpyxl')
     elif escolha == 0:
         break
