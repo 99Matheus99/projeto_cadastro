@@ -13,15 +13,43 @@ def cadastramento(): # cadastra uma pessoa nova
     cpf = altura = peso = 0
     while True:
         nome = input('Nome: ')
+        # pego basicamente qualquer letra maiúscula, minúscula, com acentos, espaço em branco e com ponto no final
         if re.match(r'^[a-zA-ZÀ-Úá-ú\s\.]+$', nome):
             break
         else:
-            print('Erro... Entrada inválida')
-    nascimento = input('data de nascimento: ')
-    altura = float(input('altura: '))
-    peso = float(input('peso: '))
+            print('Erro... nome inválido')
+    while True:
+        cpf = input('Digite o CPF: ')
+        # pego qualquer em uma repetição do padrão do CPF, separado por "." e no final por "-"
+        if re.match(r'^\d{3}\.\d{3}\.\d{3}\-\d{2}$', cpf):
+            break
+        else:
+            print('Erro... CPF inválido')
+    while True:
+        nascimento = input('data de nascimento: ')
+        # aqui pego qualquer número inteiro, separado por "/", "." ou "-"
+        if re.match(r'^[0-9]{1,2}[-.\/][0-9]{1,2}[-.\/][0-9]{4}$', nascimento):
+            break
+        else:
+            print('Erro... data inválida')
+    while True:
+        altura = input('altura: ')
+        # aqui pego qualquer número inteiro com 1 casa decimal antes do ponto e 2 casas depois do ponto
+        if re.match(r'^\d{1}\.\d{0,2}$', altura):
+            break
+        else:
+            print('Erro... entrada inválida')
+    while True:
+        peso = input('peso: ')
+        # pego qualquer número inteiro antes e depois do ponto
+        # esse número antes do ponto deve aparecer no máximo 3 vezes, e depois do ponto, 2 vezes
+        if re.match(r'^[0-9]{2,3}\.[0-9]{1,2}$', peso):
+            break
+        else:
+            print('Erro... entrada inválida')
     df.loc[len(df)] = [nome, cpf, nascimento, altura, peso] # caso localize uma linha que não existe, ele cria uma nova
     df.to_json('Bd.json', force_ascii=False, orient='records') # salvo logo em seguida
+    print('Dados registrados!')
     input('\nPressione ENTER para sair...') # serve como um "aguarde"
 def consulta(): # consulta a pessoa no banco de dados
     limpa_tela()
