@@ -50,15 +50,16 @@ def cadastramento(): # cadastra uma pessoa nova
     df.loc[len(df)] = [nome, cpf, nascimento, altura, peso] # caso localize uma linha que não existe, ele cria uma nova
     df.to_json('Bd.json', force_ascii=False, orient='records') # salvo logo em seguida
     print('Dados registrados!')
-    input('\nPressione ENTER para sair...') # serve como um "aguarde"
+    input('\nPressione ENTER para sair...')
 def consulta(): # consulta a pessoa no banco de dados
     limpa_tela()
     while True:
         nome = input('Digite o nome exato a ser pesquisado: ')
         if re.match(r'^[a-zA-ZÀ-Úá-ú\s\.]+$', nome): # aceita qualquer letra maiúscula, minúscula, com acentos, espaço em branco e com ponto no final
             if nome in df['nome'].values:
-                print(df[df['nome'] == nome]) # mostra o valor na linha do índice do nome digitado
-                indice = df.index[df['nome'] == nome].tolist() # guardo o índice da linha
+                print(df[df['nome'] == nome])
+                indice = df.index[df['nome'] == nome].tolist()
+                return indice # retorno o índice para quem quiser usar
                 break
             else:
                 print('O valor digitado não exite nos registros')
@@ -81,25 +82,24 @@ def edita(): # edita a pessoa escolhida
     peso = float(input('novo peso: '))
     df.iloc[[indice], [4]] = peso
     df.to_json('Bd.json', force_ascii=False, orient='records') # salvo logo em seguida
-    input('\nPressione ENTER para sair...') # serve como um "aguarde"
+    input('\nPressione ENTER para sair...') 
 def exclui(): # exclui a pessoa escolhida
+    aux_esc = ''
     limpa_tela()
-    nome = input('Digite o nome que deseja excluir: ')
-    if nome in df['nome'].values:
-        print(df[df['nome'] == nome]) # mostra o valor na linha do índice do nome digitado
-        indice = df.index[df['nome'] == nome].tolist() # guardo o índice da linha
-        aux = input('Tem certeza da escolha? ').strip()
-        if aux in 's':
-            return df.drop(indice)
-    input('\nPressione ENTER para sair...') # serve como um "aguarde"
+    indice_aux = consulta()
+    aux_esc = input('Deseja deletar?(S/N) ').strip().upper()
+    if aux_esc in 'SSIM':
+        return df.drop(indice_aux)
+    input('\nPressione ENTER para sair...')
 def converte_excel(): # salva o Df em um arquivo xlsx
     limpa_tela()
     df.to_excel('Bd.xlsx', engine='openpyxl') # salva em xlsx
     print('Arquivo gerado com sucesso...')
-    input('\nPressione ENTER para sair...') # serve como um "aguarde"
+    input('\nPressione ENTER para sair...')
+# -- INÍCIO DO CÓDIGO PRINCIPAL --
 df = pd.read_json('Bd.json') # abre o arquivo
 while True:
-    limpa_tela() # limpa a tela
+    limpa_tela()
     print('--------------------------')
     print(f'Pessoas cadastradas: {len(df)}')
     print('--------------------------')
@@ -118,12 +118,12 @@ while True:
         cadastramento()
     elif escolha == 3:
         consulta()
-        input('\nPressione ENTER para sair...') # serve como um "aguarde"
+        input('\nPressione ENTER para sair...')
     elif escolha == 4:
         edita()
     elif escolha == 5:
         df = exclui() 
-        df.to_json('Bd.json', force_ascii=False, orient='records') # salvo logo em seguida
+        df.to_json('Bd.json', force_ascii=False, orient='records')
     elif escolha == 6:
         converte_excel()
     elif escolha == 0:
