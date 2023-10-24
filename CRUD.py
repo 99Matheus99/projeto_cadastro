@@ -3,11 +3,11 @@ import os
 import re
 def limpa_tela(): # limpa a tela
     os.system('cls' if os.name == 'nt' else 'clear')
-def listamento(): # mostra todas as pessoas cadastradas
+def lista(): # mostra todas as pessoas cadastradas
     limpa_tela()
     print(df)
     input('\nPressione ENTER para sair...') # serve como um "aguarde"
-def cadastramento(): # cadastra uma pessoa nova
+def cadastra(): # cadastra uma pessoa nova
     limpa_tela()
     nome = nascimento = ''
     cpf = altura = peso = 0
@@ -67,21 +67,50 @@ def consulta(): # consulta a pessoa no banco de dados
             print('Erro...Entrada inválida')
 def edita(): # edita a pessoa escolhida
     limpa_tela()
-    consulta()
-    nome = nascimento = ''
-    cpf = altura = peso = 0
-    indice = 0
-    nome = input('novo nome: ')
-    df.iloc[[indice], [0]] = nome # seleciono a linha que quero, e o valor a ser editado
-    cpf = int(input('novo CPF: '))
-    df.iloc[[indice], [1]] = cpf 
-    nascimento = input('nova data de nascimento: ')
-    df.iloc[[indice], [2]] = nascimento
-    altura = float(input('nova altura: '))
-    df.iloc[[indice], [3]] = altura
-    peso = float(input('novo peso: '))
-    df.iloc[[indice], [4]] = peso
+    indice_aux = consulta()
+    escolha_aux = input('Digite o campo a ser alterado: ').lower()
+    if escolha_aux == 'nome':
+        while True:
+            var_aux = input('Digite o novo nome: ')
+            if re.match(r'^[a-zA-ZÀ-Úá-ú\s\.]+$', var_aux):
+                df.iloc[[indice_aux[0]], [0]] = var_aux # seleciono a linha que quero, e o valor a ser editado
+                break
+            else:
+                print('Erro... nome inválido')
+    elif escolha_aux == 'cpf':
+        while True:
+            var_aux = input('Digite o novo cpf: ')
+            if re.match(r'^\d{3}\.\d{3}\.\d{3}\-\d{2}$', var_aux):
+                df.iloc[[indice_aux[0]], [1]] = var_aux
+                break
+            else:
+                print('Erro... cpf inválido')
+    elif escolha_aux == 'nascimento':
+        while True:
+            var_aux = input('Digite o novo nascimento: ')
+            if re.match(r'^[0-9]{1,2}[-.\/][0-9]{1,2}[-.\/][0-9]{4}$', var_aux):
+                df.iloc[[indice_aux[0]], [2]] = var_aux
+                break
+            else:
+                print('Erro... nascimento inválido')
+    elif escolha_aux == 'altura':
+        while True:
+            var_aux = input('Digite a nova altura: ')
+            if re.match(r'^\d{1}\.\d{0,2}$', var_aux):
+                df.iloc[[indice_aux[0]], [3]] = float(var_aux)
+                break
+            else:
+                print('Erro... altura inválido')
+    elif escolha_aux == 'peso':
+        while True:
+            var_aux = input('Digite o novo peso: ')
+            if re.match(r'^\d{1}\.\d{0,2}$', var_aux):
+                df.iloc[[indice_aux[0]], [4]] = float(var_aux)
+                break
+            else:
+                print('Erro... peso inválido')
     df.to_json('Bd.json', force_ascii=False, orient='records') # salvo logo em seguida
+    print('Dados alterados com sucesso!')
     input('\nPressione ENTER para sair...') 
 def exclui(): # exclui a pessoa escolhida
     aux_esc = ''
@@ -89,8 +118,12 @@ def exclui(): # exclui a pessoa escolhida
     indice_aux = consulta()
     aux_esc = input('Deseja deletar?(S/N) ').strip().upper()
     if aux_esc in 'SSIM':
+        print('Dados excluídos com sucesso')
+        input('\nPressione ENTER para sair...')
         return df.drop(indice_aux)
-    input('\nPressione ENTER para sair...')
+    else:
+        input('\nPressione ENTER para sair...')
+        return df # se ele desistir, retorno o próprio df
 def converte_excel(): # salva o Df em um arquivo xlsx
     limpa_tela()
     df.to_excel('Bd.xlsx', engine='openpyxl') # salva em xlsx
@@ -103,26 +136,26 @@ while True:
     print('--------------------------')
     print(f'Pessoas cadastradas: {len(df)}')
     print('--------------------------')
-    print('1 - listar')
-    print('2 - cadastrar')
-    print('3 - consultar')
-    print('4 - Editar')
-    print('5 - Excluir')
+    print('1 - listar pessoas')
+    print('2 - cadastrar pessoas')
+    print('3 - consultar pessoas')
+    print('4 - Editar pessoas')
+    print('5 - Excluir pessoas')
     print('6 - Exportar p/ excel')
     print('0 - sair')
     print('--------------------------')
     escolha = int(input('Digite sua escolha: '))
     if escolha == 1:
-        listamento()
+        lista()
     elif escolha == 2:
-        cadastramento()
+        cadastra()
     elif escolha == 3:
         consulta()
         input('\nPressione ENTER para sair...')
     elif escolha == 4:
         edita()
     elif escolha == 5:
-        df = exclui() 
+        df = exclui()
         df.to_json('Bd.json', force_ascii=False, orient='records')
     elif escolha == 6:
         converte_excel()
