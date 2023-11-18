@@ -5,7 +5,10 @@ def limpa_tela(): # limpa a tela
     os.system('cls' if os.name == 'nt' else 'clear')
 def lista(): # mostra todas as pessoas cadastradas
     limpa_tela()
-    print(df)
+    if len(df) == 0:
+        print('Não há pessoas cadastradas.')
+    else:
+        print(df)
     input('\nPressione ENTER para sair...') # serve como um "aguarde"
 def cadastra(): # cadastra uma pessoa nova
     limpa_tela()
@@ -36,6 +39,7 @@ def cadastra(): # cadastra uma pessoa nova
         altura = input('altura: ')
         # aqui pego qualquer número inteiro com 1 casa decimal antes do ponto e 2 casas depois do ponto
         if re.match(r'^\d{1}\.\d{0,2}$', altura):
+            altura = float(altura)
             break
         else:
             print('Erro... entrada inválida')
@@ -44,6 +48,7 @@ def cadastra(): # cadastra uma pessoa nova
         # pego qualquer número inteiro antes e depois do ponto
         # esse número antes do ponto deve aparecer no máximo 3 vezes, e depois do ponto, 2 vezes
         if re.match(r'^[0-9]{2,3}\.[0-9]{1,2}$', peso):
+            peso = float(peso)
             break
         else:
             print('Erro... entrada inválida')
@@ -56,15 +61,15 @@ def consulta(): # consulta a pessoa no banco de dados
     while True:
         nome = input('Digite o nome exato a ser pesquisado: ')
         if re.match(r'^[a-zA-ZÀ-Úá-ú\s\.]+$', nome): # aceita qualquer letra maiúscula, minúscula, com acentos, espaço em branco e com ponto no final
-            if nome in df['nome'].values:
-                print(df[df['nome'] == nome])
-                indice = df.index[df['nome'] == nome].tolist()
-                return indice # retorno o índice para quem quiser usar
-                break
-            else:
+            df_temp = df[df['nome'].str.contains(nome, case=False)] # crio um data frame com qualquer palavra que ele ache que possui no df
+            if len(df_temp) == 0:
                 print('O valor digitado não exite nos registros')
+            else:
+                print(df_temp)
+                return df_temp.index
         else:
             print('Erro...Entrada inválida')
+        # COLOCAR FUNÇÃO PRA SAIR!
 def edita(): # edita a pessoa escolhida
     limpa_tela()
     indice_aux = consulta()
@@ -130,7 +135,11 @@ def converte_excel(): # salva o Df em um arquivo xlsx
     print('Arquivo gerado com sucesso...')
     input('\nPressione ENTER para sair...')
 # -- INÍCIO DO CÓDIGO PRINCIPAL --
-df = pd.read_json('Bd.json') # abre o arquivo
+try:
+    df = pd.read_json('Bd.json') # abre o arquivo
+except FileNotFoundError: # caso o arquivo não exista, ele cria o arquivo
+    df = pd.DataFrame(columns=['nome', 'cpf', 'nascimento', 'altura', 'peso'])
+    df.to_json('Bd.json')
 while True:
     limpa_tela()
     print('--------------------------')
