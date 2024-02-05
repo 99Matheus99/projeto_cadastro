@@ -1,3 +1,4 @@
+import os
 def valida_cpf():
     # PRIMEIRO DIGITO VERIFICADOR
     soma = digito1 = 0
@@ -24,7 +25,7 @@ def valida_cpf():
         return True
     else:
         return False
-
+os.system('cls' if os.name == 'nt' else 'clear') # limpa a tela do prompt
 # PEGA O CPF
 cpf = input('Digite o CPF: ')
 cpf = list(cpf)
@@ -33,6 +34,6 @@ cpf = ''.join(filter(str.isdigit, cpf)) # tira o que não é dígito
 validacao = valida_cpf()
 
 if validacao == True:
-    print('O cpf é válido!')
+    print('\033[1;32m cpf é válido!\033[m') # texto em negrito, cor verde
 else:
-    print('O cpf é inválido!')
+    print('\033[1;31m cpf é inválido!\033[m') # texto em negrito, cor vermelho
