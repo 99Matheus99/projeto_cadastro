@@ -1,4 +1,5 @@
 import os
+import re
 def valida_cpf():
     # PRIMEIRO DIGITO VERIFICADOR
     soma = digito1 = 0
@@ -27,7 +28,13 @@ def valida_cpf():
         return False
 os.system('cls' if os.name == 'nt' else 'clear') # limpa a tela do prompt
 # PEGA O CPF
-cpf = input('Digite o CPF: ')
+while True:
+    cpf = input('Digite o CPF: ')
+    # pego qualquer em uma repetição do padrão do CPF, separado por "." e no final por "-"
+    if re.match(r'^\d{3}\.\d{3}\.\d{3}\-\d{2}$', cpf):
+        break
+    else:
+        print('Erro... cpf deve conter formato xxx.xxx.xxx-xx')
 cpf = list(cpf)
 cpf = ''.join(filter(str.isdigit, cpf)) # tira o que não é dígito
 
